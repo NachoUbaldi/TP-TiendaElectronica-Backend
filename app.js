@@ -10,6 +10,7 @@ var cors = require('cors'); // Middleware para habilitar CORS
 var indexRouter = require('./routes/index');  // Rutas base
 var apiRouter = require('./routes/api');      // Rutas API específicas del sistema
 
+
 // Creación de la instancia de la aplicación Express
 var app = express();
 
@@ -31,7 +32,6 @@ app.use(function (req, res, next) {
   next();
 });
 
-
 // Definición de rutas
 app.use('/api', apiRouter);   // Las rutas que comienzan con /api usarán el router apiRouter
 app.use('/', indexRouter);    // Las rutas base usarán el router indexRouter
@@ -41,10 +41,7 @@ if (process.env.NODE_ENV === 'Development') {
   require('./config').config();
 }
 
-
-
 // Conexión a la base de datos MongoDB usando Mongoose y Bluebird
-
 var mongoose = require('mongoose')
 mongoose.Promise = bluebird;
 let url = `${process.env.DATABASE1}${process.env.DATABASE2}=${process.env.DATABASE3}=${process.env.DATABASE4}`
@@ -57,13 +54,12 @@ let opts = {
 
 mongoose.connect(url,opts)
   .then(() => {
-    console.log(`Succesfully Connected to theMongodb Database..`)
+    console.log(`Succesfully Connected to the Mongodb Database..`)
   })
   .catch((e) => {
     console.log(`Error Connecting to the Mongodb Database...`),
     console.log(e)
   })
-
 
 // Setup server port
 var port = process.env.PORT || 8080;
@@ -71,6 +67,5 @@ var port = process.env.PORT || 8080;
 app.listen(port,()=>{
     console.log('Servidor de ABM Users iniciado en el puerto ',port);
 });
-
 
 module.exports = app;

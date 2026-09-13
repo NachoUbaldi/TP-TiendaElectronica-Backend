@@ -1,0 +1,17 @@
+const express = require('express');
+const router = express.Router();
+const CategoryController = require('../../controllers/Category.controller.js');
+
+// Crear categoría (POST a /api/categories)
+router.post('/', CategoryController.createCategory);
+
+// Listar categorías (GET a /api/categories)
+router.get('/', CategoryController.getCategories);
+
+// Modificar categoría (PUT a /api/categories/:id)
+router.put('/:id', CategoryController.updateCategory);
+
+// Eliminar categoría (DELETE a /api/categories/:id)
+router.delete('/:id', CategoryController.deleteCategory);
+
+module.exports = router;

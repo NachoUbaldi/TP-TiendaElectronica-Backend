@@ -1,9 +1,15 @@
-/**ROUTE USER APIs. */
-var express = require('express')
+/**ROUTE USER & CATEGORY APIs. */
 
-var router = express.Router()
-var users = require('./api/user.route')
+var express = require('express');
+var router = express.Router();
 
-router.use('/users', users);
+//Importo los routers especificos de cada modelo
+var userRouter = require('./api/user.route');
+var categoryRouter = require('./api/Category.routes');
 
+// Defino las rutas para cada modelo
+router.use('/users', userRouter);
+router.use('/categories', categoryRouter);
+
+// Exporto el router principal para que pueda ser utilizado en app.js
 module.exports = router;
