@@ -1,4 +1,5 @@
 // Importación de módulos necesarios
+require('dotenv').config();
 var express = require('express');              // Framework web para Node.js
 var cookieParser = require('cookie-parser');  // Middleware para parsear cookies
 var bluebird = require('bluebird');           // Promesas mejoradas para JS
@@ -44,8 +45,7 @@ if (process.env.NODE_ENV === 'Development') {
 // Conexión a la base de datos MongoDB usando Mongoose y Bluebird
 var mongoose = require('mongoose')
 mongoose.Promise = bluebird;
-let url = `${process.env.DATABASE1}${process.env.DATABASE2}=${process.env.DATABASE3}=${process.env.DATABASE4}`
-console.log("BD",url);
+let url = process.env.MONGO_URI;
 let opts = {
   useNewUrlParser : true, 
   connectTimeoutMS:20000, 
@@ -62,7 +62,7 @@ mongoose.connect(url,opts)
   })
 
 // Setup server port
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 4000;
 // Escuchar en el puerto
 app.listen(port,()=>{
     console.log('Servidor de ABM Users iniciado en el puerto ',port);
