@@ -25,8 +25,7 @@ const ProductSchema = new mongoose.Schema({
     }],
     precio: { 
         type: Number, 
-        required: [true, 'El precio es obligatorio'],
-        min: [0, 'El precio no puede ser negativo'] // El seguro anti-pérdidas
+        min: [0, 'El precio no puede ser negativo'] // Opcional según el rubro (consigna)
     },
     disponible: { 
         type: Boolean, 

@@ -10,7 +10,10 @@ router.get('/', function(req, res, next) {
     res.send('Llegaste a la ruta de  api/user.routes');
   });
 router.post('/registration', UserController.createUser)
+router.post('/forgot-password', UserController.forgotPassword)
+router.post('/reset-password', UserController.resetPassword)
 router.post('/login/', UserController.loginUser)
+router.post('/logout', Authorization, UserController.logoutUser)
 router.get('/users',Authorization, UserController.getUsers)
 router.post('/userByMail', Authorization, UserController.getUsersByMail)
 router.put('/update', Authorization, UserController.updateUser)

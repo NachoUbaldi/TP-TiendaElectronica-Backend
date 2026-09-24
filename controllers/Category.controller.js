@@ -1,4 +1,5 @@
 const Category = require('../models/Category.model.js');
+const Product = require('../models/Product.model.js');
 
 // Crear categoría
 exports.createCategory = async (req, res) => {
@@ -41,6 +42,12 @@ exports.updateCategory = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
+    // No permitir eliminar una categoría que todavía tiene productos asociados,
+    // para no dejar referencias colgantes en el catálogo
+    const productosAsociados = await Product.exists({ categoria: id });
+    if (productosAsociados) {
+        return res.status(400).json({ message: 'No se puede eliminar la categoría porque tiene productos asociados' });
+    }
     const category = await Category.findByIdAndDelete(id);
     
     if (!category) {

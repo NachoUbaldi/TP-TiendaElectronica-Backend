@@ -1,0 +1,58 @@
+TRABAJO PRACTICO OBLIGATORIO
+PLATAFORMA WEB PARA PEQUEÑOS COMERCIOS
+INTRODUCCIÓN El objetivo del presente Trabajo Práctico Obligatorio es diseñar y desarrollar una aplicación web destinada a pequeños comercios que necesiten promocionar sus productos y/o servicios a través de Internet. La aplicación deberá contar con un sitio público para potenciales clientes y un área privada de administración que permita al propietario gestionar el contenido publicado. Cada grupo podrá elegir libremente el rubro del comercio (indumentaria, tecnología, gastronomía, estética, veterinaria, academia de idiomas, servicios profesionales, talleres, entre otros).
+REQUERIMIENTOS GENERALES • Cada grupo estará integrado por un máximo de tres alumnos. • La aplicación deberá ser responsive y adaptable a dispositivos móviles. • Se evaluará: o 40% Funcionalidades implementadas y calidad técnica. o 40% Diseño, usabilidad y experiencia de usuario. o 20% Documentación y presentación. • Tecnologías obligatorias: o Frontend: React, HTML, CSS y JavaScript. o Backend: NodeJS y Express. o Base de datos SQL o NoSQL a elección del grupo.
+REQUERIMIENTOS FUNCIONALES
+SITIO PÚBLICO El sitio deberá permitir a cualquier visitante:
+• Conocer información general del comercio. • Visualizar productos y/o servicios ofrecidos. • Buscar publicaciones. • Filtrar publicaciones por categoría. • Consultar información de contacto. • Enviar consultas al comercio.
+
+Cada producto o servicio deberá mostrar como mínimo:
+• Nombre. • Categoría. • Imagen. • Descripción. • Precio (opcional según el rubro). • Estado de disponibilidad.
+REGISTRO E INICIO DE SESIÓN El administrador del comercio deberá poder:
+• Registrarse en la aplicación. • Iniciar sesión. • Cerrar sesión. • Recuperar contraseña. • Modificar sus datos personales.
+Datos mínimos de registro:
+• Nombre y apellido. • Correo electrónico. • Teléfono. • Contraseña.
+No se permitirán usuarios con correos electrónicos duplicados.
+ADMINISTRACION DE INFORMACIÓN INSTITUCIONAL El administrador del comercio deberá poder crear y modificar la información institucional:
+• Nombre del comercio.
+• Descripción.
+• Dirección.
+• Teléfono.
+• Redes sociales.
+• Horarios de atención.
+ADMINISTRACIÓN DE PRODUCTOS Y SERVICIOS Los usuarios con el rol administrador deberán poder administrar las publicaciones del comercio.
+Operaciones mínimas:
+• Crear publicaciones. • Modificar publicaciones.
+2
+
+• Eliminar publicaciones. • Activar o desactivar publicaciones.
+Cada publicación deberá contener:
+• Nombre. • Categoría. • Descripción. • Imágenes • Precio (si corresponde). • Estado de disponibilidad.
+El sistema deberá contar con al menos 20 productos o servicios precargados en la base de datos para demostrar el correcto funcionamiento de las búsquedas, filtros y navegación.
+CATEGORÍAS El administrador deberá poder:
+• Crear categorías. • Modificar categorías. • Eliminar categorías.
+Cada producto o servicio deberá estar asociado a una categoría.
+FORMULARIO DE CONTACTO Los visitantes podrán enviar consultas al comercio mediante un formulario.
+Datos mínimos:
+• Nombre. • Correo electrónico. • Teléfono (opcional). • Asunto. • Mensaje.
+Las consultas deberán almacenarse en la base de datos.
+GESTIÓN DE CONSULTAS El administrador deberá disponer de una sección para:
+• Visualizar consultas recibidas. • Marcar consultas como leídas, respondidas o pendientes. • Eliminar consultas.
+Estados mínimos:
+• Pendiente. • Leída. • Respondida.
+3
+
+ROLES DEL SISTEMA
+VISITANTE • Navegar publicaciones. • Realizar búsquedas. • Enviar consultas.
+ADMINISTRADOR • Gestionar perfil • Gestionar productos/servicios. • Gestionar categorías. • Gestionar consultas. • Administrar información del comercio.
+REQUERIMIENTOS TÉCNICOS OBLIGATORIOS
+La solución deberá implementar:
+• React Router para la navegación. • Componentes reutilizables. • Consumo de API REST. • Persistencia de datos. • Manejo de errores. • Todos los formularios deberán implementar validaciones tanto en Frontend como en
+Backend. • Autenticación y autorización. • Diseño responsive. • Separación entre frontend y backend.
+FUNCIONALIDADES ADICIONALES (PUNTAJE EXTRA)
+• Envío de correos electrónicos desde el formulario de contacto. • Dashboard con métricas y estadísticas. • Gestión de múltiples imágenes por publicación. • Buscador avanzado. • Sistema de promociones o novedades. • Publicación destacada de productos o servicios.
+DOCUMENTACIÓN A ENTREGAR
+• Descripción funcional del sistema. • Modelo de datos. • Diagrama de navegación. • Manual de instalación. • Código fuente frontend. • Código fuente backend. • Script de creación de base de datos.
+4
+
+

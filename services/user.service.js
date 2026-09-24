@@ -1,7 +1,8 @@
-// Gettign the Newly created Mongoose Model we just created 
+// Gettign the Newly created Mongoose Model we just created
 var User = require('../models/User.model');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
+var crypto = require('crypto');
 
 // Saving the context of this module inside the _the variable
 _this = this
@@ -29,40 +30,47 @@ exports.getUsers = async function (query, page, limit) {
 }
 
 exports.createUser = async function (user) {
+    if (!user.password || user.password.length < 6)
+        throw new Error('La contraseña debe tener al menos 6 caracteres');
     // Creating a new Mongoose Object by using the new keyword
     var hashedPassword = bcrypt.hashSync(user.password, 8);
     
+    // The first registered user becomes the admin of the site
+    var userCount = await User.estimatedDocumentCount();
+
     var newUser = new User({
         name: user.name,
+        apellido: user.apellido,
         email: user.email,
+        telefono: user.telefono,
         date: new Date(),
-        password: hashedPassword
+        password: hashedPassword,
+        role: userCount === 0 ? 'admin' : 'usuario'
     })
 
     try {
         // Saving the User 
         var savedUser = await newUser.save();
         var token = jwt.sign({
-            id: savedUser._id
+            id: savedUser._id,
+            role: savedUser.role
         }, process.env.SECRET, {
             expiresIn: 86400 // expires in 24 hours
         });
         return token;
     } catch (e) {
-        // return a Error message describing the reason 
-        console.log(e)    
+        // return a Error message describing the reason
+        if (e.code === 11000) throw new Error('El email ya está registrado');
+        if (e.name === 'ValidationError') throw e;
         throw Error("Error while Creating User")
     }
 }
 
 exports.updateUser = async function (user) {
-    
-    var id = {name :user.name}
-    console.log(id)
+
     try {
-        //Find the old User Object by the Id
-        var oldUser = await User.findOne(id);
-        console.log (oldUser)
+        //Find the User by the Id that came in the auth token
+        var oldUser = await User.findById(user._id).select('+password');
     } catch (e) {
         throw Error("Error occured while Finding the User")
     }
@@ -70,27 +78,30 @@ exports.updateUser = async function (user) {
     if (!oldUser) {
         return false;
     }
-    //Edit the User Object
-    var hashedPassword = bcrypt.hashSync(user.password, 8);
-    oldUser.name = user.name
-    oldUser.email = user.email
-    oldUser.password = hashedPassword
+    //Edit only the provided fields
+    if (user.name) oldUser.name = user.name
+    if (user.apellido) oldUser.apellido = user.apellido
+    if (user.email) oldUser.email = user.email
+    if (user.telefono) oldUser.telefono = user.telefono
+    if (user.password) oldUser.password = bcrypt.hashSync(user.password, 8)
     try {
         var savedUser = await oldUser.save()
+        savedUser.password = undefined
         return savedUser;
     } catch (e) {
+        if (e.code === 11000) throw new Error('El email ya está registrado');
+        if (e.name === 'ValidationError') throw e;
         throw Error("And Error occured while updating the User");
     }
 }
 
 exports.deleteUser = async function (id) {
-    console.log(id)
     // Delete the User
     try {
-        var deleted = await User.remove({
+        var deleted = await User.deleteOne({
             _id: id
         })
-        if (deleted.n === 0 && deleted.ok === 1) {
+        if (deleted.deletedCount === 0) {
             throw Error("User Could not be deleted")
         }
         return deleted;
@@ -100,23 +111,59 @@ exports.deleteUser = async function (id) {
 }
 
 
+exports.forgotPassword = async function (email) {
+    try {
+        var user = await User.findOne({ email: email });
+        // Always respond ok, so the endpoint doesn't reveal which emails are registered
+        if (!user) return { found: false };
+        var token = crypto.randomBytes(32).toString('hex');
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 3600000; // valid for 1 hour
+        await user.save();
+        return { found: true, user: user, token: token };
+    } catch (e) {
+        throw Error("Error while recovering password")
+    }
+}
+
+exports.resetPassword = async function (token, newPassword) {
+    if (!newPassword || newPassword.length < 6)
+        throw new Error('La contraseña debe tener al menos 6 caracteres');
+    try {
+        var user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        }).select('+password');
+        if (!user) return false;
+        user.password = bcrypt.hashSync(newPassword, 8);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+        return true;
+    } catch (e) {
+        throw Error("Error while resetting password")
+    }
+}
+
 exports.loginUser = async function (user) {
 
     // Creating a new Mongoose Object by using the new keyword
     try {
         // Find the User 
-        console.log("login:",user)
         var _details = await User.findOne({
             email: user.email
-        });
+        }).select('+password');
+        if (!_details) return 0;
         var passwordIsValid = bcrypt.compareSync(user.password, _details.password);
         if (!passwordIsValid) return 0;
 
         var token = jwt.sign({
-            id: _details._id
+            id: _details._id,
+            role: _details.role
         }, process.env.SECRET, {
             expiresIn: 86400 // expires in 24 hours
         });
+        _details.password = undefined;
         return {token:token, user:_details};
     } catch (e) {
         // return a Error message describing the reason     

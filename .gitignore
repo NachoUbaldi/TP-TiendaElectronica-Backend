@@ -5,3 +5,6 @@ imagenes/*
 
 # ignore Local ENV File
 .env  
+
+# persisted logout token blacklist (runtime state)
+data/
