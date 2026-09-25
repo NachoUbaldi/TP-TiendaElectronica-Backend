@@ -32,9 +32,13 @@ loadBlacklist();
 
 var authorization = function (req, res, next) {
 
-    var token = req.headers['x-access-token'];
+    var token = req.headers['x-access-token'] || req.headers['authorization'];
     if (!token)
         return res.status(401).send({auth: false, message: 'No token provided.'});
+
+    if (token.startsWith('Bearer ')) {
+        token = token.slice(7).trim();
+    }
 
     if (blacklistedTokens[token] && blacklistedTokens[token] > Date.now())
         return res.status(401).send({auth: false, message: 'Token invalidated by logout.'});

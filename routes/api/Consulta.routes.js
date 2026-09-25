@@ -9,7 +9,8 @@ router.post('/', ConsultaController.createConsulta);
 // Listar consultas (GET a /api/consultas) - solo admin
 router.get('/', auth, auth.isAdmin, ConsultaController.getConsultas);
 
-// Cambiar estado de una consulta (PUT a /api/consultas/:id/estado) - solo admin
+// Cambiar estado de una consulta (PUT a /api/consultas/:id o /api/consultas/:id/estado) - solo admin
+router.put('/:id', auth, auth.isAdmin, ConsultaController.updateEstadoConsulta);
 router.put('/:id/estado', auth, auth.isAdmin, ConsultaController.updateEstadoConsulta);
 
 // Eliminar consulta (DELETE a /api/consultas/:id) - solo admin

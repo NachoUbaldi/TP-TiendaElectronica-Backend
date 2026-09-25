@@ -8,6 +8,7 @@ router.post('/', auth, auth.isAdmin, CategoryController.createCategory);
 
 // Listar categorías (GET a /api/categories) - pública
 router.get('/', CategoryController.getCategories);
+router.get('/:id', CategoryController.getCategoryById);
 
 // Modificar categoría (PUT a /api/categories/:id) - requiere admin
 router.put('/:id', auth, auth.isAdmin, CategoryController.updateCategory);

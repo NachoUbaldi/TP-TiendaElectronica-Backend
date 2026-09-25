@@ -27,3 +27,17 @@ exports.sendResetPasswordEmail = async function (to, resetUrl) {
     });
     return { delivered: true };
 }
+
+exports.sendContactEmail = async function (consulta) {
+    if (!transporter) {
+        console.log('[DEV] Notificacion de consulta recibida de ' + consulta.nombre + ' <' + consulta.email + '>: ' + consulta.asunto);
+        return { delivered: false };
+    }
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        to: process.env.STORE_EMAIL || process.env.SMTP_USER,
+        subject: 'Nueva consulta en la web: ' + consulta.asunto,
+        text: `Nombre: ${consulta.nombre}\nEmail: ${consulta.email}\nTelefono: ${consulta.telefono || 'No especificado'}\nAsunto: ${consulta.asunto}\n\nMensaje:\n${consulta.mensaje}`
+    });
+    return { delivered: true };
+}

@@ -22,6 +22,19 @@ exports.getCategories = async (req, res) => {
   }
 };
 
+// Ver una categoría por ID
+exports.getCategoryById = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ message: 'Categoría no encontrada' });
+    }
+    res.json(category);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Modificar categoría
 exports.updateCategory = async (req, res) => {
   try {

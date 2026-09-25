@@ -110,6 +110,15 @@ exports.deleteUser = async function (id) {
     }
 }
 
+exports.getUserById = async function (id) {
+    try {
+        var user = await User.findById(id).select('-password');
+        return user;
+    } catch (e) {
+        throw Error("Error while finding User by Id");
+    }
+}
+
 
 exports.forgotPassword = async function (email) {
     try {

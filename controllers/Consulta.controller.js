@@ -1,10 +1,17 @@
 const Consulta = require('../models/Consulta.model.js');
+const MailerService = require('../services/mailer.service.js');
 
 // Enviar una consulta (endpoint público del formulario de contacto)
 exports.createConsulta = async (req, res) => {
   try {
     const consulta = new Consulta(req.body);
     await consulta.save();
+
+    // Notificación por email (si hay SMTP configurado o logueo en modo DEV)
+    MailerService.sendContactEmail(consulta).catch(err => {
+      console.log('Error enviando notificación por email:', err.message);
+    });
+
     res.status(201).json({ message: 'Consulta enviada con éxito', consulta });
   } catch (err) {
     res.status(400).json({ error: err.message });

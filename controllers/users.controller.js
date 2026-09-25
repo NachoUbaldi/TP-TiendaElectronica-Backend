@@ -99,6 +99,18 @@ exports.removeUser = async function (req, res, next) {
     }
 }
 
+exports.getProfile = async function (req, res, next) {
+    try {
+        var user = await UserService.getUserById(req.userId);
+        if (!user) {
+            return res.status(404).json({status: 404, message: "Usuario no encontrado"});
+        }
+        return res.status(200).json({status: 200, data: user, message: "Perfil obtenido con éxito"});
+    } catch (e) {
+        return res.status(400).json({status: 400, message: e.message});
+    }
+}
+
 
 exports.loginUser = async function (req, res, next) {
     // Req.Body contains the form submit values.
