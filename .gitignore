@@ -8,3 +8,7 @@ imagenes/*
 
 # persisted logout token blacklist (runtime state)
 data/
+
+# local postman collection
+*.postman_collection.json
+postman/

@@ -2,6 +2,10 @@
 workspace:
   id: 21465a41-b2b9-4975-8d86-0180d7b111d8
 
+cloudResources:
+  collections:
+    ../postman/collections/Tienda de Electrónica - API: 7cbf19fd-483f-432c-b1f1-69fa51c3b177
+
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:
 #localResources:
