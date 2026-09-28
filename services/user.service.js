@@ -45,7 +45,7 @@ exports.createUser = async function (user) {
         telefono: user.telefono,
         date: new Date(),
         password: hashedPassword,
-        role: 'admin'
+        role: userCount === 0 ? 'admin' : 'usuario'
     })
 
     try {
