@@ -35,9 +35,6 @@ exports.createUser = async function (user) {
     // Creating a new Mongoose Object by using the new keyword
     var hashedPassword = bcrypt.hashSync(user.password, 8);
     
-    // The first registered user becomes the admin of the site
-    var userCount = await User.estimatedDocumentCount();
-
     var newUser = new User({
         name: user.name,
         apellido: user.apellido,
@@ -45,7 +42,7 @@ exports.createUser = async function (user) {
         telefono: user.telefono,
         date: new Date(),
         password: hashedPassword,
-        role: userCount === 0 ? 'admin' : 'usuario'
+        role: user.role || 'admin'
     })
 
     try {
