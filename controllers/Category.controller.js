@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Category = require('../models/Category.model.js');
 const Product = require('../models/Product.model.js');
 
@@ -8,6 +9,9 @@ exports.createCategory = async (req, res) => {
     await category.save();
     res.status(201).json(category);
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Ya existe una categoría con ese nombre' });
+    }
     res.status(400).json({ error: err.message });
   }
 };
@@ -25,6 +29,9 @@ exports.getCategories = async (req, res) => {
 // Ver una categoría por ID
 exports.getCategoryById = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: 'ID de categoría inválido' });
+    }
     const category = await Category.findById(req.params.id);
     if (!category) {
       return res.status(404).json({ message: 'Categoría no encontrada' });
@@ -39,14 +46,20 @@ exports.getCategoryById = async (req, res) => {
 exports.updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    // El { new: true } es para que devuelva la categoría ya actualizada, no la vieja
-    const category = await Category.findByIdAndUpdate(id, req.body, { new: true });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'ID de categoría inválido' });
+    }
+    // El { new: true, runValidators: true } devuelve la categoría actualizada y ejecuta validaciones
+    const category = await Category.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
     
     if (!category) {
         return res.status(404).json({ message: 'Categoría no encontrada' });
     }
     res.json(category);
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Ya existe una categoría con ese nombre' });
+    }
     res.status(400).json({ error: err.message });
   }
 };
@@ -55,6 +68,9 @@ exports.updateCategory = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'ID de categoría inválido' });
+    }
     // No permitir eliminar una categoría que todavía tiene productos asociados,
     // para no dejar referencias colgantes en el catálogo
     const productosAsociados = await Product.exists({ categoria: id });

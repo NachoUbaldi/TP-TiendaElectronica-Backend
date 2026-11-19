@@ -12,3 +12,7 @@ data/
 # local postman collection
 *.postman_collection.json
 postman/
+
+# frontend build & dependencies
+frontend/node_modules/
+frontend/dist/

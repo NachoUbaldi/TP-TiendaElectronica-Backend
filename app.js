@@ -19,23 +19,32 @@ var app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Habilita CORS para todas las rutas
-app.use(cors());
+// Habilita CORS para el frontend configurado (o cualquier origen en desarrollo)
+app.use(cors({
+  origin: process.env.FRONTEND_URL || true,
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'x-access-token', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+}));
 
 // Middleware para parsear cookies
 app.use(cookieParser());
 
-// Middleware personalizado para configurar cabeceras CORS más específicas
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-access-token, Authorization");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-  next();
-});
-
 // Definición de rutas
 app.use('/api', apiRouter);   // Las rutas que comienzan con /api usarán el router apiRouter
 app.use('/', indexRouter);    // Las rutas base usarán el router indexRouter
+
+// Respuesta JSON para rutas de API inexistentes
+app.use('/api', function (req, res) {
+  res.status(404).json({ message: 'Ruta de API no encontrada' });
+});
+
+// Manejo de errores globales (incluyendo JSON malformado en el body)
+app.use(function (err, req, res, next) {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ message: 'JSON inválido en el cuerpo de la solicitud' });
+  }
+  res.status(err.status || 500).json({ message: err.message || 'Error interno del servidor' });
+});
 
 // Carga la configuración si el entorno es "Development"
 if (process.env.NODE_ENV === 'Development') {

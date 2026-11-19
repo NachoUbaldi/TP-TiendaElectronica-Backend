@@ -113,7 +113,9 @@ exports.getProfile = async function (req, res, next) {
 
 
 exports.loginUser = async function (req, res, next) {
-    // Req.Body contains the form submit values.
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).json({status: 400, message: "Email y contraseña obligatorios"});
+    }
     var User = {
         email: req.body.email,
         password: req.body.password
@@ -131,14 +133,22 @@ exports.loginUser = async function (req, res, next) {
     }
 }
 exports.logoutUser = async function (req, res, next) {
-    // Invalidate the token so it can't be used anymore
-    Authorization.blacklistToken(req.headers['x-access-token']);
+    // Invalidate the token so it can't be used anymore (supports x-access-token and Authorization: Bearer)
+    var token = req.headers['x-access-token'] || req.headers['authorization'];
+    if (token && token.startsWith('Bearer ')) {
+        token = token.slice(7).trim();
+    }
+    Authorization.blacklistToken(token);
     return res.status(200).json({status: 200, message: "Logout exitoso"});
 }
 
 exports.forgotPassword = async function (req, res, next) {
+    var email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+        return res.status(400).json({status: 400, message: "Debe ingresar un email válido."});
+    }
     try {
-        var result = await UserService.forgotPassword(req.body.email);
+        var result = await UserService.forgotPassword(email);
         if (result.found) {
             var url = (process.env.FRONTEND_URL || 'http://localhost:3000') + '/reset-password?token=' + result.token;
             await MailerService.sendResetPasswordEmail(result.user.email, url);
@@ -151,6 +161,9 @@ exports.forgotPassword = async function (req, res, next) {
 }
 
 exports.resetPassword = async function (req, res, next) {
+    if (!req.body.token || typeof req.body.token !== 'string') {
+        return res.status(400).json({status: 400, message: "El token es obligatorio."});
+    }
     try {
         var ok = await UserService.resetPassword(req.body.token, req.body.password);
         if (!ok)

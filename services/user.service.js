@@ -80,7 +80,11 @@ exports.updateUser = async function (user) {
     if (user.apellido) oldUser.apellido = user.apellido
     if (user.email) oldUser.email = user.email
     if (user.telefono) oldUser.telefono = user.telefono
-    if (user.password) oldUser.password = bcrypt.hashSync(user.password, 8)
+    if (user.password) {
+        if (user.password.length < 6)
+            throw new Error('La contraseña debe tener al menos 6 caracteres');
+        oldUser.password = bcrypt.hashSync(user.password, 8)
+    }
     try {
         var savedUser = await oldUser.save()
         savedUser.password = undefined

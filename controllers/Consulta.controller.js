@@ -1,5 +1,8 @@
+const mongoose = require('mongoose');
 const Consulta = require('../models/Consulta.model.js');
 const MailerService = require('../services/mailer.service.js');
+
+const ESTADOS_VALIDOS = ['pendiente', 'leida', 'respondida'];
 
 // Enviar una consulta (endpoint público del formulario de contacto)
 exports.createConsulta = async (req, res) => {
@@ -18,10 +21,17 @@ exports.createConsulta = async (req, res) => {
   }
 };
 
-// Listar consultas (solo admin)
+// Listar consultas (solo admin, con filtro opcional ?estado=pendiente|leida|respondida)
 exports.getConsultas = async (req, res) => {
   try {
-    const consultas = await Consulta.find().sort({ createdAt: -1 });
+    const filtro = {};
+    if (req.query.estado) {
+      if (!ESTADOS_VALIDOS.includes(req.query.estado)) {
+        return res.status(400).json({ message: 'Estado inválido. Valores permitidos: pendiente, leida, respondida' });
+      }
+      filtro.estado = req.query.estado;
+    }
+    const consultas = await Consulta.find(filtro).sort({ createdAt: -1 });
     res.json(consultas);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -32,6 +42,12 @@ exports.getConsultas = async (req, res) => {
 exports.updateEstadoConsulta = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'ID de consulta inválido' });
+    }
+    if (!req.body.estado || !ESTADOS_VALIDOS.includes(req.body.estado)) {
+      return res.status(400).json({ message: 'El estado es obligatorio y debe ser: pendiente, leida o respondida' });
+    }
     const consulta = await Consulta.findByIdAndUpdate(
       id,
       { estado: req.body.estado },
@@ -50,6 +66,9 @@ exports.updateEstadoConsulta = async (req, res) => {
 exports.deleteConsulta = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'ID de consulta inválido' });
+    }
     const consulta = await Consulta.findByIdAndDelete(id);
     if (!consulta) {
       return res.status(404).json({ message: 'Consulta no encontrada' });

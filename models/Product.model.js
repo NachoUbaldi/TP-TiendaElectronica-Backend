@@ -30,6 +30,10 @@ const ProductSchema = new mongoose.Schema({
     disponible: { 
         type: Boolean, 
         default: true // Por defecto, todo producto nuevo entra como disponible
+    },
+    destacado: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

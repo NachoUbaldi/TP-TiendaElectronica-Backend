@@ -16,11 +16,15 @@ exports.getInfo = async (req, res) => {
 // Crear o actualizar la información del comercio (solo admin, un único documento)
 exports.upsertInfo = async (req, res) => {
   try {
-    const info = await InfoComercio.findOneAndUpdate({}, req.body, {
+    const existing = await InfoComercio.findOne();
+    if (!existing) {
+      const created = new InfoComercio(req.body);
+      await created.save();
+      return res.status(201).json(created);
+    }
+    const info = await InfoComercio.findByIdAndUpdate(existing._id, req.body, {
       new: true,
-      upsert: true,
-      runValidators: true,
-      setDefaultsOnInsert: true
+      runValidators: true
     });
     res.json(info);
   } catch (err) {
